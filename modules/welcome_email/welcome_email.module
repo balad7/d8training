@@ -1,0 +1,43 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\UserInterface;
+
+
+function welcome_email_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+
+    case 'help.page.welcome_email':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sends a welcome email to registered users.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+function welcome_email_user_insert(UserInterface $user) {
+
+  $queue_factory = \Drupal::service('queue');
+
+
+  $queue = $queue_factory->get('welcome_email');
+
+  $queue->createItem($user->id());
+}
+
+
+function welcome_email_mail($key, &$message, $params) {
+  $variables = [
+    '@site-name' => \Drupal::config('system.site')->get('name'),
+    '@username' => $params['account']->getDisplayName(),
+  ];
+  $language = \Drupal::languageManager()->getLanguage($message['langcode']);
+  $options = ['langcode' => $language->getId()];
+
+  $message['subject'] .= t('Welcome to @site-name', $variables, $options);
+  $message['body'][] = t('Hello @username,', $variables, $options);
+  $message['body'][] = t('Welcome to the @site-name !!!', $variables, $options);
+}

@@ -1,5 +1,6 @@
 <?php
 namespace Drupal\block_system\Plugin\QueueWorker;
+
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
@@ -60,18 +61,7 @@ class BlockUpdate extends QueueWorkerBase implements ContainerFactoryPluginInter
     $block->set('field_change', $data['Change']);
     return $block->save();
   }
-  /**
-   * Gets stock exchange rate data.
-   *
-   * @param string $symbol
-   *   Company symbol.
-   *
-   * @return array
-   *   Associative array with data.
-   *
-   * @throws \Exception
-   *   If response from API is broken.
-   */
+
   protected function getSercData($symbol) {
     $url = 'http://dev.markitondemand.com/MODApis/Api/v2/Quote/jsonp?symbol=' . $symbol . '&callback=myFunction';
     $response = $this->httpClient->request('GET', $url);
